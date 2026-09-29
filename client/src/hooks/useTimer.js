@@ -116,11 +116,12 @@ export function useTimer(onComplete) {
       const nextFocusCount = mode === 'focus' ? completedFocusSessions + 1 : completedFocusSessions
 
       if (mode === 'focus') setCompletedFocusSessions(nextFocusCount)
+      const actualStartedAt = startedAt || new Date(now - (durations[mode] * 60 * 1000)).toISOString()
       onCompleteRef.current({
         mode,
         duration: durations[mode],
-        startedAt,
-        completedAt: new Date().toISOString(),
+        startedAt: actualStartedAt,
+        completedAt: new Date(now).toISOString(),
       })
 
       const nextMode = getNextMode(mode, nextFocusCount)

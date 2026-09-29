@@ -9,7 +9,9 @@ async function request(path, options) {
   const data = await response.json().catch(() => ({}))
 
   if (!response.ok) {
-    throw new Error(data.message || 'The server could not complete the request.')
+    const errorDetails = Array.isArray(data.errors) && data.errors.length ? data.errors.join(', ') : null
+    const message = errorDetails ? `${data.message || 'Validation failed'}: ${errorDetails}` : (data.message || 'The server could not complete the request.')
+    throw new Error(message)
   }
 
   return data
