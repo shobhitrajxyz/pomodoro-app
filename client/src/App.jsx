@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Activity, Check, Clock3, Pause, Play, RotateCcw, Settings2, Timer, Volume2, VolumeX, X } from 'lucide-react'
+import { Activity, Check, Clock3, Pause, Play, RotateCcw, Settings2, Timer, Trash2, Volume2, VolumeX, X } from 'lucide-react'
 import './App.css'
 import { useTimer } from './hooks/useTimer.js'
 import { formatTime, isValidDurations, MODES } from './lib/timer.js'
 import { playChime, requestNotificationPermission, sendNotification } from './lib/audio.js'
-import { createSession, getSessions } from './services/api.js'
+import { getDeviceId } from './lib/deviceId.js'
+import { clearSessions, createSession, deleteSession, getSessions } from './services/api.js'
 
 const today = new Date().toDateString()
 const headerDate = new Intl.DateTimeFormat(undefined, { weekday: 'short', month: 'short', day: 'numeric' }).format(new Date())
@@ -29,7 +30,8 @@ function App() {
 
   useEffect(() => {
     let isMounted = true
-    getSessions()
+    const deviceId = getDeviceId()
+    getSessions(deviceId)
       .then((savedSessions) => {
         if (!isMounted) return
         setSessions(savedSessions)
@@ -119,6 +121,37 @@ function App() {
     }
   }
 
+  async function handleDeleteSession(id) {
+    try {
+      setSaveError('')
+      const deviceId = getDeviceId()
+      await deleteSession(id, deviceId)
+      setSessions((current) => current.filter((s) => (s.id || s._id) !== id))
+    } catch (err) {
+      setSaveError(err.message)
+    }
+  }
+
+  function handleClearAllHistory() {
+    setConfirmModal({
+      title: 'Clear session history?',
+      message: 'Are you sure you want to delete all completed sessions for this browser? This will permanently remove them from the database.',
+      actionLabel: 'Clear history',
+      onConfirm: async () => {
+        try {
+          setSaveError('')
+          const deviceId = getDeviceId()
+          await clearSessions(deviceId)
+          setSessions([])
+          setConfirmModal(null)
+        } catch (err) {
+          setSaveError(err.message)
+          setConfirmModal(null)
+        }
+      },
+    })
+  }
+
   async function handleComplete(completedSession) {
     if (soundEnabled) playChime()
     const modeLabel = MODES[completedSession.mode]?.label || completedSession.mode
@@ -128,7 +161,9 @@ function App() {
     setSaveError('')
 
     try {
+      const deviceId = getDeviceId()
       const savedSession = await createSession({
+        deviceId,
         type: 'focus',
         duration: completedSession.duration,
         startedAt: completedSession.startedAt,
@@ -271,21 +306,40 @@ function App() {
                 <p>No focus sessions yet today.</p>
               </div>
             )}
-            {historyState === 'ready' && todaySessions.map((session, index) => (
-              <div className="session-row" key={session.id || session._id || `${session.completedAt}-${index}`}>
-                <span className="session-check"><Check size={14} /></span>
-                <span className="session-row-title">Focus session</span>
-                <span className="session-row-duration">{session.duration} min</span>
-                <time className="session-row-time" dateTime={session.completedAt}>
-                  {formatSessionTime(session.completedAt)}
-                </time>
-              </div>
-            ))}
+            {historyState === 'ready' && todaySessions.map((session, index) => {
+              const sessionId = session.id || session._id || `${session.completedAt}-${index}`
+              return (
+                <div className="session-row" key={sessionId}>
+                  <span className="session-check"><Check size={14} /></span>
+                  <span className="session-row-title">Focus session</span>
+                  <span className="session-row-duration">{session.duration} min</span>
+                  <time className="session-row-time" dateTime={session.completedAt}>
+                    {formatSessionTime(session.completedAt)}
+                  </time>
+                  {(session.id || session._id) && (
+                    <button
+                      className="session-delete-btn"
+                      onClick={() => handleDeleteSession(session.id || session._id)}
+                      type="button"
+                      aria-label="Delete session"
+                      title="Delete session"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  )}
+                </div>
+              )
+            })}
           </div>
 
           <div className="history-footer">
             <span className="footer-rule" />
             <span><strong>{timer.completedFocusSessions % 4}</strong> of 4 toward a long break</span>
+            {todaySessions.length > 0 && (
+              <button className="clear-history-btn" onClick={handleClearAllHistory} type="button">
+                Clear history
+              </button>
+            )}
           </div>
         </aside>
       </main>

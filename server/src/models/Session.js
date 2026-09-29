@@ -1,6 +1,11 @@
 import mongoose from 'mongoose'
 
 const sessionSchema = new mongoose.Schema({
+  deviceId: {
+    type: String,
+    required: false,
+    index: true,
+  },
   type: {
     type: String,
     enum: ['focus'],
@@ -21,5 +26,7 @@ const sessionSchema = new mongoose.Schema({
     required: true,
   },
 }, { timestamps: true })
+
+sessionSchema.index({ deviceId: 1, completedAt: -1 })
 
 export default mongoose.model('Session', sessionSchema)

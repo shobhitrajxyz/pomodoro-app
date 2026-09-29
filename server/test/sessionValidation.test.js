@@ -52,3 +52,9 @@ test('rejects completion timestamps in the future', () => {
   })
   assert.ok(errors.includes('completedAt cannot be in the future'))
 })
+
+test('validates deviceId string parameter when provided', () => {
+  assert.deepEqual(validateSessionPayload({ ...createValidSession(), deviceId: 'dev_test_123' }), [])
+  assert.ok(validateSessionPayload({ ...createValidSession(), deviceId: 12345 }).length > 0)
+  assert.ok(validateSessionPayload({ ...createValidSession(), deviceId: '   ' }).length > 0)
+})

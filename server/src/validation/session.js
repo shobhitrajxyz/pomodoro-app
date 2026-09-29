@@ -5,9 +5,12 @@ function isIsoDate(value) {
 }
 
 export function validateSessionPayload(payload) {
-  const { type, duration, startedAt, completedAt } = payload ?? {}
+  const { type, duration, startedAt, completedAt, deviceId } = payload ?? {}
   const errors = []
 
+  if (deviceId !== undefined && (typeof deviceId !== 'string' || !deviceId.trim())) {
+    errors.push('deviceId must be a non-empty string')
+  }
   if (type !== 'focus') errors.push('type must be focus')
   if (!Number.isInteger(duration) || duration < 1 || duration > 120) {
     errors.push('duration must be an integer between 1 and 120')

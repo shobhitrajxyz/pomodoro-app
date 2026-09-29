@@ -17,8 +17,9 @@ async function request(path, options) {
   return data
 }
 
-export async function getSessions() {
-  const data = await request('/sessions')
+export async function getSessions(deviceId) {
+  const query = deviceId ? `?deviceId=${encodeURIComponent(deviceId)}` : ''
+  const data = await request(`/sessions${query}`)
   return data.sessions
 }
 
@@ -28,4 +29,20 @@ export async function createSession(session) {
     body: JSON.stringify(session),
   })
   return data.session
+}
+
+export async function deleteSession(id, deviceId) {
+  const query = deviceId ? `?deviceId=${encodeURIComponent(deviceId)}` : ''
+  const data = await request(`/sessions/${id}${query}`, {
+    method: 'DELETE',
+  })
+  return data
+}
+
+export async function clearSessions(deviceId) {
+  const query = deviceId ? `?deviceId=${encodeURIComponent(deviceId)}` : ''
+  const data = await request(`/sessions${query}`, {
+    method: 'DELETE',
+  })
+  return data
 }
