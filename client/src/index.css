@@ -3,9 +3,9 @@
   --muted: #748078;
   --line: #dfe5dd;
   --paper: #f4f6f2;
-  --sans: 'Manrope', 'Avenir Next', sans-serif;
-  --display: 'Space Grotesk', 'Avenir Next', sans-serif;
-  --mono: 'IBM Plex Mono', 'SFMono-Regular', monospace;
+  --sans: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Avenir Next', sans-serif;
+  --display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Avenir Next', sans-serif;
+  --mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
   font-family: var(--sans);
   color: var(--ink);
   background: var(--paper);
@@ -22,6 +22,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  background: var(--paper);
 }
 
 button { font: inherit; }
