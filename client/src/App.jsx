@@ -375,7 +375,7 @@ function App() {
 
       <footer className="page-footer">
         <span>ONE THING AT A TIME</span>
-        <span>BUILT FOR A BETTER RHYTHM</span>
+        <span>made possible by N♥️</span>
       </footer>
     </div>
   )
