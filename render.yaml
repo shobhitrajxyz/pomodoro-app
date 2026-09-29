@@ -1,0 +1,32 @@
+# Render Blueprint for Pomodoro MERN Application
+services:
+  # Express Node.js Backend API
+  - type: web
+    name: pomodoro-backend
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: CLIENT_URL
+        sync: false
+
+  # React Vite Frontend Static Site
+  - type: web
+    name: pomodoro-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./client/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: pomodoro-backend
+          property: url

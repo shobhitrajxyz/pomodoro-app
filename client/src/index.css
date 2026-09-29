@@ -1,0 +1,29 @@
+:root {
+  --ink: #1d2d25;
+  --muted: #748078;
+  --line: #dfe5dd;
+  --paper: #f4f6f2;
+  --sans: 'Manrope', 'Avenir Next', sans-serif;
+  --display: 'Space Grotesk', 'Avenir Next', sans-serif;
+  --mono: 'IBM Plex Mono', 'SFMono-Regular', monospace;
+  font-family: var(--sans);
+  color: var(--ink);
+  background: var(--paper);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+button { font: inherit; }
+
+::selection { color: #fff; background: #37866c; }
